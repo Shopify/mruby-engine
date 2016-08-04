@@ -1,0 +1,147 @@
+def assert_true(title)
+  raise AssertionError, "expected #{title} to be true" unless yield
+end
+
+assert_true('Time.new') do
+  Time.new.class == Time
+end
+
+assert_true('Time') do
+  Time.class == Class
+end
+
+assert_true('Time.at') do
+  Time.at(1300000000.0)
+end
+
+assert_true('Time.utc') do
+  Time.utc(2012, 12, 23)
+end
+
+assert_true('Time#+') do
+  t1 = Time.at(1300000000.0)
+  t2 = t1.+(60)
+
+  t2.utc.asctime == "Sun Mar 13 07:07:40 UTC 2011"
+end
+
+assert_true('Time#-') do
+  t1 = Time.at(1300000000.0)
+  t2 = t1.-(60)
+
+  t2.utc.asctime == "Sun Mar 13 07:05:40 UTC 2011"
+end
+
+assert_true('Time#<=>') do
+  t1 = Time.at(1300000000.0)
+  t2 = Time.at(1400000000.0)
+  t3 = Time.at(1500000000.0)
+
+  t2.<=>(t1) == 1 and
+    t2.<=>(t2) == 0 and
+    t2.<=>(t3) == -1 and
+    t2.<=>(nil) == nil
+end
+
+assert_true('Time#asctime') do
+  Time.at(1300000000.0).utc.asctime == "Sun Mar 13 07:06:40 UTC 2011"
+end
+
+assert_true('Time#ctime') do
+  Time.at(1300000000.0).utc.ctime == "Sun Mar 13 07:06:40 UTC 2011"
+end
+
+assert_true('Time#day') do
+  Time.utc(2012, 12, 23).day == 23
+end
+
+assert_true('Time#dst?') do
+  not Time.utc(2012, 12, 23).utc.dst?
+end
+
+assert_true('Time#getutc') do
+  Time.at(1300000000.0).getutc.asctime == "Sun Mar 13 07:06:40 UTC 2011"
+end
+
+assert_true('Time#hour') do
+  Time.utc(2012, 12, 23, 7, 6).hour == 7
+end
+
+assert_true('Time#initialize_copy') do
+  time_tmp_2 = Time.at(7.0e6)
+  time_tmp_2.clone == time_tmp_2
+end
+
+assert_true('Time#mday') do
+  Time.utc(2012, 12, 23).mday == 23
+end
+
+assert_true('Time#min') do
+  Time.utc(2012, 12, 23, 7, 6).min == 6
+end
+
+assert_true('Time#mon') do
+  Time.utc(2012, 12, 23).mon == 12
+end
+
+assert_true('Time#month') do
+  Time.utc(2012, 12, 23).month == 12
+end
+
+assert_true('Times#sec') do
+  Time.utc(2012, 12, 23, 7, 6, 40).sec == 40
+end
+
+assert_true('Time#to_f') do
+  Time.at(1300000000.0).to_f == 1300000000.0
+end
+
+assert_true('Time#to_i') do
+  Time.at(1300000000.0).to_i == 1300000000
+end
+
+assert_true('Time#usec') do
+  Time.at(1300000000.0).usec == 0
+end
+
+assert_true('Time#utc') do
+  Time.at(1300000000.0).utc
+end
+
+assert_true('Time#utc?') do
+  Time.at(1300000000.0).utc.utc?
+end
+
+assert_true('Time#wday') do
+  Time.utc(2012, 12, 23).wday == 0
+end
+
+assert_true('Time#yday') do
+  Time.utc(2012, 12, 23).yday == 358
+end
+
+assert_true('Time#year') do
+  Time.utc(2012, 12, 23).year == 2012
+end
+
+assert_true('Time#zone') do
+  Time.at(1300000000.0).utc.zone == 'UTC'
+end
+
+# Not ISO specified
+
+assert_true('Time#to_s') do
+  Time.at(1300000000.0).utc.to_s == "Sun Mar 13 07:06:40 UTC 2011"
+end
+
+assert_true('Time#inspect') do
+  Time.at(1300000000.0).utc.inspect == "Sun Mar 13 07:06:40 UTC 2011"
+end
+
+assert_true('2000 times 500us make a second') do
+  t = Time.utc 2015
+  2000.times do
+    t += 0.0005
+  end
+  t.usec == 0
+end

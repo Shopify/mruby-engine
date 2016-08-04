@@ -1,0 +1,13 @@
+machine:
+  ruby:
+    version: 2.2.3
+dependencies:
+  pre:
+    - git submodule sync
+    - git submodule update --init
+    - sudo apt-get update; sudo apt-get install libunwind8-dev
+  post:
+    - bundle exec rake compile
+test:
+  post:
+    - bundle exec rake test:mpdecimal

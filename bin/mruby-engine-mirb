@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'pathname'
+
+exec Pathname.new(__FILE__).dirname.join('../ext/mruby_engine/mruby/build/host/bin/mirb').to_s

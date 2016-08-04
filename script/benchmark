@@ -1,0 +1,196 @@
+#!/usr/bin/env ruby
+
+require 'benchmark/ips'
+require 'mruby_engine'
+
+Benchmark.ips do |x|
+  make_engine = lambda do
+    MRubyEngine.new(1 << 28, 3_000_000, 1.0)
+  end
+
+  x.report("creation") do
+    make_engine.call
+  end
+
+  DATA = {
+    "cart" => {
+      "line_items" => [
+        {
+          "variant_id" => "da4752c3-9dbb-4147-9c92-1020c55a55a4",
+          "quantity" => 1,
+          "properties" => {"discounted" => "element"},
+          "discounts" => [],
+          "source_indices" => [0],
+          "adjustments" => [
+            {
+              "property" => "line_price",
+              "old_value" => {"cents" => "1000"},
+              "new_value" => {"cents" => "800"},
+              "message" => "2$ off the Element",
+              "group_id" => nil,
+            },
+            {
+              "property" => "properties",
+              "old_value" => {"original" => "element"},
+              "new_value" => {"discounted" => "element"},
+              "message" => "2$ off the Element",
+              "group_id" => nil,
+            },
+          ],
+        },
+        {
+          "variant_id" => "0de640ee-e128-4a16-8001-387ab1f8d8c7",
+          "quantity" => 2,
+          "properties" => {"extra" => "draft"},
+          "discounts" => [],
+          "source_indices" => [1],
+          "adjustments" => [
+            {
+              "property" => "line_price",
+              "old_value" => {"cents" => "2000"},
+              "new_value" => {"cents" => "1600"},
+              "message" => "2$ off the Draft",
+              "group_id" => nil,
+            },
+            {
+              "property" => "properties",
+              "old_value" => {"original" => "draft"},
+              "new_value" => {"extra" => "draft"},
+              "message" => "2$ off the Draft",
+              "group_id" => nil,
+            },
+          ],
+        },
+        {
+          "variant_id" => "dc4dd92c-810c-48d3-88cd-1b4a6539d7ab",
+          "quantity" => 1,
+          "properties" => {"free" => "draft"},
+          "discounts" => [],
+          "source_indices" => [1],
+          "adjustments" => [
+            {
+              "property" => "line_price",
+              "old_value" => {"cents" => "1000"},
+              "new_value" => {"cents" => "800"},
+              "message" => "2$ off the Draft",
+              "group_id" => nil,
+            },
+            {
+              "property" => "properties",
+              "old_value" => {"original" => "draft"},
+              "new_value" => {"extra" => "draft"},
+              "message" => "2$ off the Draft",
+              "group_id" => nil,
+            },
+            {
+              "property" => "line_price",
+              "old_value" => {"cents" => "800"},
+              "new_value" => {"cents" => "0"},
+              "message" => "Second Draft free",
+              "group_id" => nil,
+            },
+            {
+              "property" => "properties",
+              "old_value" => {"extra" => "draft"},
+              "new_value" => {"free" => "draft"},
+              "message" => "Second Draft free",
+              "group_id" => nil,
+            },
+          ],
+        },
+      ],
+    },
+  }
+
+  x.report("injection x1") do
+    engine = make_engine.call
+    engine.inject("@foo", DATA)
+  end
+
+  x.report("injection x10") do
+    engine = make_engine.call
+    (1..10).each do |i|
+      engine.inject("@foo#{i}", DATA)
+    end
+  end
+
+  x.report("injection x100") do
+    engine = make_engine.call
+    (1..100).each do |i|
+      engine.inject("@foo#{i}", DATA)
+    end
+  end
+
+  x.report("injection+extraction x1") do
+    engine = make_engine.call
+    engine.inject("@foo", DATA)
+    engine.extract("@foo")
+  end
+
+  x.report("injection+extraction x10") do
+    engine = make_engine.call
+    (1..10).each do |i|
+      engine.inject("@foo#{i}", DATA)
+      engine.extract("@foo#{i}")
+    end
+  end
+
+  x.report("injection+extraction x100") do
+    engine = make_engine.call
+    (1..100).each do |i|
+      engine.inject("@foo#{i}", DATA)
+      engine.extract("@foo#{i}")
+    end
+  end
+
+  x.report("eval light x1") do
+    engine = make_engine.call
+    engine.sandbox_eval('addition.rb', '1 + 3')
+  end
+
+  x.report("eval light x10") do
+    engine = make_engine.call
+    10.times do
+      engine.sandbox_eval('addition.rb', '1 + 3')
+    end
+  end
+
+  x.report("eval light x100") do
+    engine = make_engine.call
+    100.times do
+      engine.sandbox_eval('addition.rb', '1 + 3')
+    end
+  end
+
+  HEAVY = <<-SOURCE.freeze
+    def stringify(whatever)
+      whatever.to_s
+    end
+
+    def stringify2(whatever)
+      '-' + stringify(whatever)
+    end
+
+    a = 'asdf'
+    (1..1000).each { |x| a << stringify2(x) }
+  SOURCE
+
+  x.report("eval heavy x1") do
+    engine = make_engine.call
+    engine.sandbox_eval('addition.rb', HEAVY)
+  end
+
+  x.report("eval heavy x10") do
+    engine = make_engine.call
+    10.times do
+      engine.sandbox_eval('addition.rb', HEAVY)
+    end
+  end
+
+  x.report("eval heavy x100") do
+    engine = make_engine.call
+    100.times do
+      engine.sandbox_eval('addition.rb', HEAVY)
+    end
+  end
+end

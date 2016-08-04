@@ -1,0 +1,35 @@
+class AssertionError < StandardError
+end
+
+def assert(value, message_proc)
+  raise AssertionError, message_proc.call unless value
+end
+
+def assert_equal(l, r)
+  assert(l == r, -> { "expected #{r} to be == to #{l}" })
+end
+
+def refute_equal(l, r)
+  assert(l != r, -> { "expected #{r} not to be == to #{l}" })
+end
+
+def assert_eql(l, r)
+  assert(l.eql?(r), -> { "expected #{r} to be eql? to #{l}" })
+end
+
+def refute_eql(l, r)
+  assert(!l.eql?(r), -> { "expected #{r} not to be eql? to #{l}" })
+end
+
+def refute_respond_to(receiver, message)
+  assert(!receiver.respond_to?(message), -> { "expected #{receiver.inspect} not to respond to #{message}" })
+end
+
+def assert_raises(exception_class, message = nil)
+  yield if block_given?
+rescue => e
+  assert(e.class == exception_class, -> { "expected #{e.inspect} to be a #{exception_class}" })
+  assert(message === e.message, -> { %(expected "#{e.message}" to match "#{message}") })
+else
+  assert(false, -> { "expected block to raise #{exception_class}" })
+end

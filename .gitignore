@@ -1,0 +1,17 @@
+/.bundle/
+/.yardoc
+/Gemfile.lock
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+*.bundle
+*.dSYM
+*.so
+*.o
+*.a
+mkmf.log
+/ext/mruby_engine/mruby-mpdecimal/tests/runtest
+/ext/mruby_engine/mruby-mpdecimal/tests/runtest_alloc

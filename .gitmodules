@@ -1,0 +1,3 @@
+[submodule "ext/mruby_engine/mruby"]
+	path = ext/mruby_engine/mruby
+	url = https://github.com/mruby/mruby.git
