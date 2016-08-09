@@ -16,7 +16,11 @@ me_host_exception_t me_host_argument_error_new(const char *format, ...)
   __attribute__((format(printf, 1, 2)));
 me_host_exception_t me_host_type_error_new(const char *format, ...)
   __attribute__((format(printf, 1, 2)));
-me_host_exception_t me_host_runtime_error_new(const char *message, me_host_backtrace_t backtrace);
+me_host_exception_t me_host_runtime_error_new(
+  const char *type,
+  size_t type_len,
+  const char *message,
+  me_host_backtrace_t backtrace);
 me_host_exception_t me_host_syntax_error_new(
   const char *path, int line, int column, const char *message);
 me_host_exception_t me_host_memory_quota_error_new(

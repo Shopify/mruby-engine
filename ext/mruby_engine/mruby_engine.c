@@ -97,9 +97,15 @@ me_host_exception_t me_mruby_engine_get_exception(struct me_mruby_engine *self) 
     me_host_backtrace_push_location(host_backtrace, mrb_string_value_cstr(self->state, &location));
   }
 
+  struct RClass *class = mrb_class(self->state, exception);
+  mrb_value class_name_obj = mrb_obj_as_string(self->state, mrb_obj_value(class));
+  struct RString *class_name = mrb_str_ptr(class_name_obj);
   mrb_value message = mrb_funcall_argv(self->state, exception, self->sym_to_s, 0, NULL);
   me_host_exception_t err = me_host_runtime_error_new(
-    mrb_string_value_cstr(self->state, &message), host_backtrace);
+    RSTR_PTR(class_name),
+    RSTR_LEN(class_name),
+    mrb_string_value_cstr(self->state, &message),
+    host_backtrace);
 
   self->state->exc = NULL;
   return err;

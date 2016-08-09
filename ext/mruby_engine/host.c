@@ -1,10 +1,10 @@
-#include <libunwind.h>
-#include <string.h>
 #include "host.h"
 #include "ext.h"
 #include "platform.h"
+#include <libunwind.h>
 #include <ruby.h>
 #include <ruby/thread.h>
+#include <string.h>
 
 const intptr_t ME_HOST_NIL = Qnil;
 const intptr_t ME_HOST_FALSE = Qfalse;
@@ -47,10 +47,14 @@ me_host_exception_t me_host_quota_already_reached_new(const char *format, ...) {
 }
 
 me_host_exception_t me_host_runtime_error_new(
+  const char *type,
+  size_t type_len,
   const char *message,
   me_host_backtrace_t backtrace)
 {
   VALUE exception = rb_exc_new_cstr(me_ext_e_engine_runtime_error, message);
+  VALUE rtype = rb_utf8_str_new(type, type_len);
+  rb_funcall(exception, me_ext_id_type_eq, 1, rtype);
   rb_funcall(exception, me_ext_id_guest_backtrace_eq, 1, backtrace);
   return exception;
 }

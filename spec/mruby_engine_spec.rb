@@ -119,6 +119,42 @@ RSpec.describe MRubyEngine do
     end
   end
 
+  it "makes the exception type available" do
+    expect {
+      engine.sandbox_eval("error.rb", <<-SOURCE)
+        class TransmogrificationError < StandardError; end
+        raise(TransmogrificationError, "This looks bad.")
+      SOURCE
+    }.to raise_error(MRubyEngine::EngineRuntimeError) do |e|
+      expect(e.type).to eq("TransmogrificationError")
+    end
+  end
+
+  it "makes the exeption type available for nameless exceptions" do
+    expect {
+      engine.sandbox_eval("error.rb", <<-SOURCE)
+        raise(Class.new(StandardError), "This looks bad.")
+      SOURCE
+    }.to raise_error(MRubyEngine::EngineRuntimeError) do |e|
+      expect(e.type).to match(/\A#<Class:0x\h+>\z/)
+    end
+  end
+
+  it "makes the exeption type available for exceptions with garbage to_s" do
+    expect {
+      engine.sandbox_eval("error.rb", <<-SOURCE)
+        class TransmogrificationError < StandardError
+          def self.to_s
+            raise("dickbutt")
+          end
+        end
+        raise(TransmogrificationError, "This looks bad.")
+      SOURCE
+    }.to raise_error(MRubyEngine::EngineRuntimeError) do |e|
+      expect(e.type).to match(/\A#<Class:0x\h+>\z/)
+    end
+  end
+
   describe :inject do
     it "raises ArgumentError if not initialized" do
       expect do

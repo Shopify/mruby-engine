@@ -13,6 +13,7 @@ ID me_ext_id_generate;
 ID me_ext_id_instructions;
 ID me_ext_id_memory;
 ID me_ext_id_mul;
+ID me_ext_id_type_eq;
 VALUE me_ext_m_json;
 VALUE me_ext_c_mruby_engine;
 VALUE me_ext_c_iseq;
@@ -334,6 +335,7 @@ void Init_mruby_engine(void) {
   me_ext_id_instructions = rb_intern("instructions");
   me_ext_id_memory = rb_intern("memory");
   me_ext_id_mul = rb_intern("*");
+  me_ext_id_type_eq = rb_intern("type=");
 
   me_ext_m_json = rb_path2class("JSON");
 
