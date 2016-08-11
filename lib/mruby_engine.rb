@@ -3,7 +3,7 @@ require "mruby_engine/version"
 
 class MRubyEngine
   class EngineRuntimeError < EngineError
-    attr_accessor :guest_backtrace
+    attr_accessor :guest_backtrace, :type
   end
 
   class InstructionSequence
