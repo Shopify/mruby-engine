@@ -1,6 +1,6 @@
 # MRubyEngine
 
-MRuby engine is a sandboxed scripting engine. It wrap [mruby](https://mruby.org/) into a gem that can be included in any Ruby application.
+MRuby engine is a sandboxed scripting engine. It wraps [mruby](https://mruby.org/) into a gem that can be included in any Ruby application.
 
 ## Getting Started
 
