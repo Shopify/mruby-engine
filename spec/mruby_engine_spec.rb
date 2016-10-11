@@ -57,9 +57,44 @@ RSpec.describe MRubyEngine do
       expect(stat[:instructions]).to eq(0)
     end
 
+    it ":cpu_time is zero on a fresh engine" do
+      stat = reasonable_engine.stat
+      expect(stat[:cpu_time]).to eq(0)
+    end
+
+    it ":ctx_switches_v is nil on a fresh engine" do
+      stat = reasonable_engine.stat
+      expect(stat.key?(:ctx_switches_v)).to be true
+      expect(stat[:ctx_switches_v]).to be nil
+    end
+
+    it ":ctx_switches_iv is nil on a fresh engine" do
+      stat = reasonable_engine.stat
+      expect(stat.key?(:ctx_switches_iv)).to be true
+      expect(stat[:ctx_switches_iv]).to be nil
+    end
+
     it ":instructions is non zero after executing some code" do
       engine.sandbox_eval("addition.rb", "1 + 1")
       expect(engine.stat[:instructions]).not_to eq(0)
+    end
+
+    it ":cpu_time is non zero after executing some code" do
+      skip("Not supported on #{RUBY_PLATFORM}.") unless RUBY_PLATFORM =~ /linux/
+      engine.sandbox_eval("addition.rb", "1 + 1")
+      expect(engine.stat[:cpu_time]).to be >= 0
+    end
+
+    it ":ctx_switches_v is 0 or larger after executing some code" do
+      skip("Not supported on #{RUBY_PLATFORM}.") unless RUBY_PLATFORM =~ /linux/
+      engine.sandbox_eval("addition.rb", "1 + 1")
+      expect(engine.stat[:ctx_switches_v]).to be >= 0
+    end
+
+    it ":ctx_switches_iv is 0 or larger after executing some code" do
+      skip("Not supported on #{RUBY_PLATFORM}.") unless RUBY_PLATFORM =~ /linux/
+      engine.sandbox_eval("addition.rb", "1 + 1")
+      expect(engine.stat[:ctx_switches_iv]).to be >= 0
     end
 
     it ":instructions is equal to quota after reaching quota" do

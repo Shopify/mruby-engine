@@ -12,6 +12,9 @@ ID me_ext_id_guest_backtrace_eq;
 ID me_ext_id_generate;
 ID me_ext_id_instructions;
 ID me_ext_id_memory;
+ID me_ext_id_ctx_switch_v;
+ID me_ext_id_ctx_switch_iv;
+ID me_ext_id_cpu_time;
 ID me_ext_id_mul;
 ID me_ext_id_type_eq;
 VALUE me_ext_m_json;
@@ -273,6 +276,23 @@ static VALUE ext_mruby_engine_stat(VALUE rself) {
   uint64_t memory_count = me_mruby_engine_get_memory_count(self);
   rb_hash_aset(stat, ID2SYM(me_ext_id_memory), ULONG2NUM(memory_count));
 
+  int64_t ctx_switches_v = me_mruby_engine_get_ctx_switches_voluntary(self);
+  if (ctx_switches_v >= 0) {
+    rb_hash_aset(stat, ID2SYM(me_ext_id_ctx_switch_v), LONG2NUM(ctx_switches_v));
+  } else {
+    rb_hash_aset(stat, ID2SYM(me_ext_id_ctx_switch_v), Qnil);
+  }
+
+  int64_t ctx_switches_iv = me_mruby_engine_get_ctx_switches_involuntary(self);
+  if (ctx_switches_v >= 0) {
+    rb_hash_aset(stat, ID2SYM(me_ext_id_ctx_switch_iv), LONG2NUM(ctx_switches_iv));
+  } else {
+    rb_hash_aset(stat, ID2SYM(me_ext_id_ctx_switch_iv), Qnil);
+  }
+
+  uint64_t cpu_time = me_mruby_engine_get_cpu_time(self);
+  rb_hash_aset(stat, ID2SYM(me_ext_id_cpu_time), ULONG2NUM(cpu_time));
+
   return stat;
 }
 
@@ -334,6 +354,9 @@ void Init_mruby_engine(void) {
   me_ext_id_generate = rb_intern("generate");
   me_ext_id_instructions = rb_intern("instructions");
   me_ext_id_memory = rb_intern("memory");
+  me_ext_id_ctx_switch_v = rb_intern("ctx_switches_v");
+  me_ext_id_ctx_switch_iv = rb_intern("ctx_switches_iv");
+  me_ext_id_cpu_time = rb_intern("cpu_time");
   me_ext_id_mul = rb_intern("*");
   me_ext_id_type_eq = rb_intern("type=");
 
