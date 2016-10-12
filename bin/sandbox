@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/mruby_engine'
+
+MEGABYTE = 1 << 20
+
+REASONABLE_MEMORY_QUOTA = 4 * MEGABYTE
+REASONABLE_INSTRUCTION_QUOTA = 100_000
+REASONABLE_TIME_QUOTA = 0.1r
+
+engine = MRubyEngine.new(REASONABLE_MEMORY_QUOTA, REASONABLE_INSTRUCTION_QUOTA, REASONABLE_TIME_QUOTA)
+
+engine.sandbox_eval('mruby-engine.rb', ARGF.read)
