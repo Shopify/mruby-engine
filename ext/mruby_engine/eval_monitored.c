@@ -166,15 +166,15 @@ void me_mruby_engine_eval(
   } while (!wait_result && !self->eval_state.eval_done_p);
 
   clockid_t cid;
-  int thread_clock_id_err = pthread_getcpuclockid(thread, &cid);
-  if (thread_clock_id_err == 0) {
+  if (pthread_getcpuclockid(thread, &cid)) {
+    self->cpu_time_ns = -1;
+  } else {
     struct timespec ts;
-    clock_gettime(cid, &ts);
-    self->cpu_time_ns     = ts.tv_sec * 1000000000 + ts.tv_nsec;
-  } else if (thread_clock_id_err == ENOENT) {
-    self->cpu_time_ns     = -1;
-  } else if (thread_clock_id_err == ESRCH) {
-    self->cpu_time_ns     = -2;
+    if (clock_gettime(cid, &ts)) {
+      self->cpu_time_ns = -1;
+    } else {
+      self->cpu_time_ns = ts.tv_sec * 1000000000 + ts.tv_nsec;
+    } 
   }
 
   if(!bypass_ctx && !getrusage(RUSAGE_SELF, &ru_now)) {
