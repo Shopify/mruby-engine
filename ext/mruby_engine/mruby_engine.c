@@ -186,6 +186,9 @@ struct me_mruby_engine *me_mruby_engine_new(
   self->quota_error_raised = false;
   self->state->code_fetch_hook = mruby_engine_code_fetch_hook;
   self->time_quota = time_quota;
+  self->ctx_switches_v = -1;
+  self->ctx_switches_iv = -1;
+  self->cpu_time_ns = 0;
 
   return self;
 }
@@ -303,6 +306,18 @@ uint64_t me_mruby_engine_get_instruction_count(struct me_mruby_engine *self) {
 
 uint64_t me_mruby_engine_get_memory_count(struct me_mruby_engine *self) {
   return me_memory_pool_get_allocation(self->allocator);
+}
+
+int64_t me_mruby_engine_get_ctx_switches_voluntary(struct me_mruby_engine *self) {
+  return self->ctx_switches_v;
+}
+
+int64_t me_mruby_engine_get_ctx_switches_involuntary(struct me_mruby_engine *self) {
+  return self->ctx_switches_iv;
+}
+
+uint64_t me_mruby_engine_get_cpu_time(struct me_mruby_engine *self) {
+  return self->cpu_time_ns;
 }
 
 static int next_source(struct mrb_parser_state *parser_state) {

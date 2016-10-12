@@ -36,6 +36,9 @@ struct me_mruby_engine {
   uint64_t instruction_quota;
   bool quota_error_raised;
   struct timespec time_quota;
+  int64_t ctx_switches_v;
+  int64_t ctx_switches_iv;
+  int64_t cpu_time_ns;
 
   mrb_sym sym_to_s;
 };

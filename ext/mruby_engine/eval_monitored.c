@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <pthread.h>
 #include <sys/time.h>
+#include <sys/resource.h>
 #include <time.h>
 
 static void timespec_add(struct timespec *dst, const struct timespec *src) {
@@ -152,6 +153,9 @@ void me_mruby_engine_eval(
   }
   timespec_add(&self->eval_state.deadline, &self->time_quota);
 
+  struct rusage ru_then, ru_now;
+  int bypass_ctx = getrusage(RUSAGE_SELF, &ru_then);
+
   int wait_result;
   do {
     wait_result = (int)(intptr_t)me_host_invoke_unblocking(mruby_engine_wait_without_gvl, self);
@@ -160,6 +164,26 @@ void me_mruby_engine_eval(
       goto cleanup;
     }
   } while (!wait_result && !self->eval_state.eval_done_p);
+
+  clockid_t cid;
+  if (pthread_getcpuclockid(thread, &cid)) {
+    self->cpu_time_ns = -1;
+  } else {
+    struct timespec ts;
+    if (clock_gettime(cid, &ts)) {
+      self->cpu_time_ns = -1;
+    } else {
+      self->cpu_time_ns = ts.tv_sec * 1000000000 + ts.tv_nsec;
+    } 
+  }
+
+  if(!bypass_ctx && !getrusage(RUSAGE_SELF, &ru_now)) {
+    self->ctx_switches_v  = ru_now.ru_nvcsw  - ru_then.ru_nvcsw;
+    self->ctx_switches_iv = ru_now.ru_nivcsw - ru_then.ru_nivcsw;
+  } else {
+    self->ctx_switches_v  = -1;
+    self->ctx_switches_iv = -1;
+  }
 
   if ((err_no = pthread_mutex_unlock(&self->eval_state.mutex))) {
     *err = me_host_internal_error_new_from_err_no("pthread_mutex_unlock", err_no);
