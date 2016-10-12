@@ -1,6 +1,13 @@
 #!/usr/bin/env ruby
 
-require_relative '../lib/mruby_engine'
+require "pathname"
+
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", File.dirname(Pathname.new(__FILE__).realpath))
+
+
+require "rubygems"
+require "bundler/setup"
+require "mruby_engine"
 
 MEGABYTE = 1 << 20
 
