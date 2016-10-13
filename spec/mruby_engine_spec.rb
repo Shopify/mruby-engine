@@ -82,7 +82,7 @@ RSpec.describe MRubyEngine do
     it ":cpu_time is non zero after executing some code" do
       skip("Not supported on #{RUBY_PLATFORM}.") unless RUBY_PLATFORM =~ /linux/
       engine.sandbox_eval("addition.rb", "1 + 1")
-      expect(engine.stat[:cpu_time]).to be >= 0
+      expect(engine.stat[:cpu_time]).not_to eq(0)
     end
 
     it ":ctx_switches_v is 0 or larger after executing some code" do
