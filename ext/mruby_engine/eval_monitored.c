@@ -156,6 +156,11 @@ void me_mruby_engine_eval(
   struct rusage ru_then, ru_now;
   int bypass_ctx = getrusage(RUSAGE_SELF, &ru_then);
 
+  clockid_t cid;
+  if (err_no = pthread_getcpuclockid(thread, &cid)) {
+    self->cpu_time_ns = err_no * -1; // -(ENOENT = 2 || ESRCH = 3)
+  }
+
   int wait_result;
   do {
     wait_result = (int)(intptr_t)me_host_invoke_unblocking(mruby_engine_wait_without_gvl, self);
@@ -165,10 +170,7 @@ void me_mruby_engine_eval(
     }
   } while (!wait_result && !self->eval_state.eval_done_p);
 
-  clockid_t cid;
-  if (err_no = pthread_getcpuclockid(thread, &cid)) {
-    self->cpu_time_ns = err_no * -1; // -(ENOENT = 2 || ESRCH = 3) 
-  } else {
+  if (!self->cpu_time_ns) {
     struct timespec ts;
     if (err_no = clock_gettime(cid, &ts)) {
       self->cpu_time_ns = err_no * -1; // -(EINVAL = 22 || EFAULT == 14)
