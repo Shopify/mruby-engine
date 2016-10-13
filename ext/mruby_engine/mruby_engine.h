@@ -63,7 +63,7 @@ uint64_t me_mruby_engine_get_instruction_count(struct me_mruby_engine *self);
 uint64_t me_mruby_engine_get_memory_count(struct me_mruby_engine *self);
 int64_t me_mruby_engine_get_ctx_switches_voluntary(struct me_mruby_engine *self);
 int64_t me_mruby_engine_get_ctx_switches_involuntary(struct me_mruby_engine *self);
-uint64_t me_mruby_engine_get_cpu_time(struct me_mruby_engine *self);
+int64_t me_mruby_engine_get_cpu_time(struct me_mruby_engine *self);
 bool me_mruby_engine_get_quota_exception_raised(struct me_mruby_engine *self);
 struct me_proc *me_mruby_engine_generate_code(
   struct me_mruby_engine *self,

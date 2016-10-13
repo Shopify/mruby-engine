@@ -316,7 +316,7 @@ int64_t me_mruby_engine_get_ctx_switches_involuntary(struct me_mruby_engine *sel
   return self->ctx_switches_iv;
 }
 
-uint64_t me_mruby_engine_get_cpu_time(struct me_mruby_engine *self) {
+int64_t me_mruby_engine_get_cpu_time(struct me_mruby_engine *self) {
   return self->cpu_time_ns;
 }
 

@@ -290,8 +290,8 @@ static VALUE ext_mruby_engine_stat(VALUE rself) {
     rb_hash_aset(stat, ID2SYM(me_ext_id_ctx_switch_iv), Qnil);
   }
 
-  uint64_t cpu_time = me_mruby_engine_get_cpu_time(self);
-  rb_hash_aset(stat, ID2SYM(me_ext_id_cpu_time), ULONG2NUM(cpu_time));
+  int64_t cpu_time = me_mruby_engine_get_cpu_time(self);
+  rb_hash_aset(stat, ID2SYM(me_ext_id_cpu_time), LONG2NUM(cpu_time));
 
   return stat;
 }
