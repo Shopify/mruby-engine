@@ -192,8 +192,12 @@ void me_mruby_engine_eval(
 
   if (wait_result) {
     if ((err_no = pthread_cancel(thread))) {
-      *err = me_host_internal_error_new_from_err_no("pthread_cancel", err_no);
-      goto cleanup;
+      if (err_no == ESRCH) {
+        wait_result = 0;
+      } else {
+        *err = me_host_internal_error_new_from_err_no("pthread_cancel", err_no);
+        goto cleanup;
+      }
     }
   }
 
