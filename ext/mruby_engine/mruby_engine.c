@@ -24,7 +24,7 @@ static void mruby_engine_signal_memory_quota_reached(struct me_mruby_engine *sel
     .type = ME_EVAL_MEMORY_QUOTA_REACHED,
     .memory_quota_reached = {
       .size = size,
-      .allocation = me_memory_pool_get_allocation(self->allocator),
+      .allocation = me_memory_pool_info(self->allocator).uordblks,
       .capacity = me_memory_pool_get_capacity(self->allocator),
     },
   };
@@ -304,8 +304,8 @@ uint64_t me_mruby_engine_get_instruction_count(struct me_mruby_engine *self) {
   return self->instruction_count;
 }
 
-uint64_t me_mruby_engine_get_memory_count(struct me_mruby_engine *self) {
-  return me_memory_pool_get_allocation(self->allocator);
+struct meminfo me_mruby_engine_get_memory_info(struct me_mruby_engine *self) {
+  return me_memory_pool_info(self->allocator);
 }
 
 int64_t me_mruby_engine_get_ctx_switches_voluntary(struct me_mruby_engine *self) {

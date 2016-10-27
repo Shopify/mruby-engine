@@ -26,12 +26,19 @@ struct me_memory_pool_err {
   } data;
 };
 
+struct meminfo {
+  size_t arena;
+  size_t hblkhd;   /* space in mmapped regions */
+  size_t uordblks; /* total allocated space */
+  size_t fordblks; /* total free space */
+};
+
 struct me_memory_pool;
 
 struct me_memory_pool *me_memory_pool_new(size_t capacity, struct me_memory_pool_err *err);
 void me_memory_pool_destroy(struct me_memory_pool *self);
 
-size_t me_memory_pool_get_allocation(struct me_memory_pool *self);
+struct meminfo me_memory_pool_info(struct me_memory_pool *self);
 size_t me_memory_pool_get_capacity(struct me_memory_pool *self);
 void *me_memory_pool_malloc(struct me_memory_pool *self, size_t size);
 void *me_memory_pool_realloc(struct me_memory_pool *self, void *block, size_t size);

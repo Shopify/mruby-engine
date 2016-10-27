@@ -12,6 +12,9 @@ ID me_ext_id_guest_backtrace_eq;
 ID me_ext_id_generate;
 ID me_ext_id_instructions;
 ID me_ext_id_memory;
+ID me_ext_id_memory_arena;
+ID me_ext_id_memory_hblkhd;
+ID me_ext_id_memory_fordblks;
 ID me_ext_id_ctx_switch_v;
 ID me_ext_id_ctx_switch_iv;
 ID me_ext_id_cpu_time;
@@ -273,8 +276,11 @@ static VALUE ext_mruby_engine_stat(VALUE rself) {
   uint64_t instruction_count = me_mruby_engine_get_instruction_count(self);
   rb_hash_aset(stat, ID2SYM(me_ext_id_instructions), ULONG2NUM(instruction_count));
 
-  uint64_t memory_count = me_mruby_engine_get_memory_count(self);
-  rb_hash_aset(stat, ID2SYM(me_ext_id_memory), ULONG2NUM(memory_count));
+  struct meminfo memory = me_mruby_engine_get_memory_info(self);
+  rb_hash_aset(stat, ID2SYM(me_ext_id_memory), ULONG2NUM(memory.uordblks));
+  rb_hash_aset(stat, ID2SYM(me_ext_id_memory_arena), ULONG2NUM(memory.arena));
+  rb_hash_aset(stat, ID2SYM(me_ext_id_memory_hblkhd), ULONG2NUM(memory.hblkhd));
+  rb_hash_aset(stat, ID2SYM(me_ext_id_memory_fordblks), ULONG2NUM(memory.fordblks));
 
   int64_t ctx_switches_v = me_mruby_engine_get_ctx_switches_voluntary(self);
   if (ctx_switches_v >= 0) {
@@ -354,6 +360,9 @@ void Init_mruby_engine(void) {
   me_ext_id_generate = rb_intern("generate");
   me_ext_id_instructions = rb_intern("instructions");
   me_ext_id_memory = rb_intern("memory");
+  me_ext_id_memory_arena = rb_intern("memory_arena");
+  me_ext_id_memory_hblkhd = rb_intern("memory_hblkhd");
+  me_ext_id_memory_fordblks = rb_intern("memory_fordblks");
   me_ext_id_ctx_switch_v = rb_intern("ctx_switches_v");
   me_ext_id_ctx_switch_iv = rb_intern("ctx_switches_iv");
   me_ext_id_cpu_time = rb_intern("cpu_time");
