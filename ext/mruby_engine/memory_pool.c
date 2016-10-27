@@ -63,9 +63,14 @@ struct me_memory_pool *me_memory_pool_new(size_t capacity, struct me_memory_pool
   return self;
 }
 
-size_t me_memory_pool_get_allocation(struct me_memory_pool *self) {
-  struct mallinfo info = mspace_mallinfo(self->mspace);
-  return info.uordblks;
+struct meminfo me_memory_pool_info(struct me_memory_pool *self) {
+  struct meminfo info;
+  struct mallinfo dlinfo = mspace_mallinfo(self->mspace);
+  info.arena = dlinfo.arena;
+  info.hblkhd = dlinfo.hblkhd;
+  info.uordblks = dlinfo.uordblks;
+  info.fordblks = dlinfo.fordblks;
+  return info;
 }
 
 size_t me_memory_pool_get_capacity(struct me_memory_pool *self) {
