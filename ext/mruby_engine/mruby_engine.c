@@ -305,6 +305,7 @@ uint64_t me_mruby_engine_get_instruction_count(struct me_mruby_engine *self) {
 }
 
 struct meminfo me_mruby_engine_get_memory_info(struct me_mruby_engine *self) {
+  me_memory_pool_hack(self->allocator);
   return me_memory_pool_info(self->allocator);
 }
 
