@@ -58,7 +58,7 @@ struct me_memory_pool *me_memory_pool_new(size_t capacity, struct me_memory_pool
   struct me_memory_pool *self = mspace_malloc(mspace, sizeof(struct me_memory_pool));
   self->mspace = mspace;
   self->start = bytes;
-  self->capacity = capacity;
+  self->capacity = rounded_capacity;
 
   err->type = ME_MEMORY_POOL_NO_ERR;
   return self;
