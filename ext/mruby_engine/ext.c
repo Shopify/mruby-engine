@@ -15,6 +15,8 @@ ID me_ext_id_memory;
 ID me_ext_id_memory_arena;
 ID me_ext_id_memory_hblkhd;
 ID me_ext_id_memory_fordblks;
+ID me_ext_id_malloc_size;
+ID me_ext_id_malloc_count;
 ID me_ext_id_ctx_switch_v;
 ID me_ext_id_ctx_switch_iv;
 ID me_ext_id_cpu_time;
@@ -281,6 +283,8 @@ static VALUE ext_mruby_engine_stat(VALUE rself) {
   rb_hash_aset(stat, ID2SYM(me_ext_id_memory_arena), ULONG2NUM(memory.arena));
   rb_hash_aset(stat, ID2SYM(me_ext_id_memory_hblkhd), ULONG2NUM(memory.hblkhd));
   rb_hash_aset(stat, ID2SYM(me_ext_id_memory_fordblks), ULONG2NUM(memory.fordblks));
+  rb_hash_aset(stat, ID2SYM(me_ext_id_malloc_size), ULONG2NUM(memory.malloc_size));
+  rb_hash_aset(stat, ID2SYM(me_ext_id_malloc_count), ULONG2NUM(memory.malloc_count));
 
   int64_t ctx_switches_v = me_mruby_engine_get_ctx_switches_voluntary(self);
   if (ctx_switches_v >= 0) {
@@ -365,6 +369,8 @@ void Init_mruby_engine(void) {
   me_ext_id_memory_fordblks = rb_intern("memory_fordblks");
   me_ext_id_ctx_switch_v = rb_intern("ctx_switches_v");
   me_ext_id_ctx_switch_iv = rb_intern("ctx_switches_iv");
+  me_ext_id_malloc_size = rb_intern("malloc_size");
+  me_ext_id_malloc_count = rb_intern("malloc_count");
   me_ext_id_cpu_time = rb_intern("cpu_time");
   me_ext_id_mul = rb_intern("*");
   me_ext_id_type_eq = rb_intern("type=");
