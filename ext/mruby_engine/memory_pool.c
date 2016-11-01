@@ -54,10 +54,11 @@ struct me_memory_pool *me_memory_pool_new(size_t capacity, struct me_memory_pool
   }
 
   mspace mspace = create_mspace_with_base(bytes, rounded_capacity, 0);
+  mspace_set_footprint_limit(mspace, rounded_capacity);
   struct me_memory_pool *self = mspace_malloc(mspace, sizeof(struct me_memory_pool));
   self->mspace = mspace;
   self->start = bytes;
-  self->capacity = capacity;
+  self->capacity = rounded_capacity;
 
   err->type = ME_MEMORY_POOL_NO_ERR;
   return self;

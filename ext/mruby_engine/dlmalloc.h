@@ -1303,6 +1303,8 @@ DLMALLOC_EXPORT size_t destroy_mspace(mspace msp);
 */
 DLMALLOC_EXPORT mspace create_mspace_with_base(void* base, size_t capacity, int locked);
 
+DLMALLOC_EXPORT size_t mspace_set_footprint_limit(mspace msp, size_t bytes);
+
 /*
   mspace_track_large_chunks controls whether requests for large chunks
   are allocated in their own untracked mmapped regions, separate from
