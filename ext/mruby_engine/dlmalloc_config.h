@@ -2,7 +2,6 @@
 #define MRUBY_ENGINE_DLMALLOC_CONFIG_H
 
 #define ONLY_MSPACES 1
-#define HAVE_MMAP 0
 #define HAVE_MREMAP 0
 //#define FOOTERS 1
 
