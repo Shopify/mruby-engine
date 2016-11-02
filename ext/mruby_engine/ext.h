@@ -10,6 +10,8 @@ extern ID me_ext_id_memory;
 extern ID me_ext_id_memory_arena;
 extern ID me_ext_id_memory_hblkhd;
 extern ID me_ext_id_memory_fordblks;
+extern ID me_ext_id_malloc_size;
+extern ID me_ext_id_malloc_count;
 extern ID me_ext_id_ctx_switch_v;
 extern ID me_ext_id_ctx_switch_iv;
 extern ID me_ext_id_cpu_time;
