@@ -1316,11 +1316,11 @@ static int has_segment_link(mstate m, msegmentptr ss) {
 #else /* USE_LOCKS */
 
 #ifndef PREACTION
-#define PREACTION(M) (barrier())
+#define PREACTION(M) (0)
 #endif  /* PREACTION */
 
 #ifndef POSTACTION
-#define POSTACTION(barrier)
+#define POSTACTION(M)
 #endif  /* POSTACTION */
 
 #endif /* USE_LOCKS */
@@ -1356,10 +1356,6 @@ static void reset_on_error(mstate m);
 
 #endif /* PROCEED_ON_ERROR */
 
-inline int barrier() {
-  __asm__ __volatile__("mfence": : :"memory");
-  return 0;
-}
 
 /* -------------------------- Debugging setup ---------------------------- */
 
@@ -4526,40 +4522,6 @@ struct mallinfo mspace_mallinfo(mspace msp) {
     USAGE_ERROR_ACTION(ms,ms);
   }
   return internal_mallinfo(ms);
-}
-
-void log_stuff(mspace msp) {
-  mstate m = (mstate)msp;
-  ensure_initialization();
-  if (!PREACTION(m)) {
-    check_malloc_state(m);
-    if (is_initialized(m)) {
-      size_t nfree = SIZE_T_ONE; /* top always free */
-      size_t mfree = m->topsize + TOP_FOOT_SIZE;
-      size_t sum = mfree;
-      msegmentptr s = &m->seg;
-      while (s != 0) {
-        fprintf(stderr, "[SCRIPT-DEBUG] S @ %p\n", (void *)s);
-        mchunkptr q = align_as_chunk(s->base);
-        while (segment_holds(s, q) &&
-               q != m->top && q->head != FENCEPOST_HEAD) {
-          size_t sz = chunksize(q);
-          sum += sz;
-          if (!is_inuse(q)) {
-            mfree += sz;
-            ++nfree;
-          }
-          q = next_chunk(q);
-        }
-        s = s->next;
-      }
-
-      fprintf(stderr, "[SCRIPT-DEBUG] sum=%zu, nfree=%zu, footprint=%zu, hblkhd=%zu, max_footprint=%zu, uordblks=%zu, mfree=%zu, topsize=%zu\n",
-          sum, nfree, m->footprint, m->footprint - sum, m->max_footprint, m->footprint - mfree, mfree, m->topsize);
-    }
-
-    POSTACTION(m);
-  }
 }
 #endif /* NO_MALLINFO */
 

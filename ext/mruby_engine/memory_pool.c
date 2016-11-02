@@ -7,8 +7,6 @@
 #include <errno.h>
 #include <stdint.h>
 
-#define barrier() __asm__ __volatile__("mfence": : :"memory")
-
 #if defined(MAP_ANONYMOUS)
 #define ME_MAP_ANONYMOUS MAP_ANONYMOUS
 #elif defined(MAP_ANON)
@@ -21,7 +19,6 @@ struct me_memory_pool {
   mspace mspace;
   uint8_t *start;
   size_t capacity;
-  char state;
 };
 
 #define CAPACITY_MIN ((size_t)(256 * KiB))
@@ -66,22 +63,7 @@ struct me_memory_pool *me_memory_pool_new(size_t capacity, struct me_memory_pool
   return self;
 }
 
-void me_memory_pool_hack(struct me_memory_pool *self) {
-  const char *state;
-  barrier();
-  switch(self->state) {
-    case 0: state = "IDLE"; break;
-    case 1: state = "MALLOC"; break;
-    case 2: state = "REALLOC"; break;
-    case 3: state = "FREE"; break;
-    default: state = "WTF?!";
-  }
-  fprintf(stderr, "[SCRIPT-DEBUG] alloc-state=%s\n", state);
-  log_stuff(self->mspace);
-}
-
 struct meminfo me_memory_pool_info(struct me_memory_pool *self) {
-  me_memory_pool_hack(self);
   struct meminfo info;
   struct mallinfo dlinfo = mspace_mallinfo(self->mspace);
   info.arena = dlinfo.arena;
@@ -96,29 +78,15 @@ size_t me_memory_pool_get_capacity(struct me_memory_pool *self) {
 }
 
 void *me_memory_pool_malloc(struct me_memory_pool *self, size_t size) {
-  self->state = 1;
-  barrier();
-  void *ptr = mspace_malloc(self->mspace, size);
-  self->state = 0;
-  barrier();
-  return ptr;
+  return mspace_malloc(self->mspace, size);
 }
 
 void *me_memory_pool_realloc(struct me_memory_pool *self, void *block, size_t size) {
-  self->state = 2;
-  barrier();
-  void *ptr = mspace_realloc(self->mspace, block, size);
-  self->state = 0;
-  barrier();
-  return ptr;
+  return mspace_realloc(self->mspace, block, size);
 }
 
 void me_memory_pool_free(struct me_memory_pool *self, void *block) {
-  self->state = 3;
-  barrier();
-  mspace_free(self->mspace, block);
-  self->state = 0;
-  barrier();
+  return mspace_free(self->mspace, block);
 }
 
 void me_memory_pool_destroy(struct me_memory_pool *self) {

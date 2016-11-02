@@ -38,7 +38,6 @@ struct me_memory_pool;
 struct me_memory_pool *me_memory_pool_new(size_t capacity, struct me_memory_pool_err *err);
 void me_memory_pool_destroy(struct me_memory_pool *self);
 
-void me_memory_pool_hack(struct me_memory_pool *self);
 struct meminfo me_memory_pool_info(struct me_memory_pool *self);
 size_t me_memory_pool_get_capacity(struct me_memory_pool *self);
 void *me_memory_pool_malloc(struct me_memory_pool *self, size_t size);
