@@ -57,8 +57,10 @@ static void *mruby_engine_allocf(struct mrb_state *state, void *block, size_t si
 
   struct me_mruby_engine *engine = data;
 
-  if (size == 0 && block != NULL) {
-    me_memory_pool_free(engine->allocator, block);
+  if (size == 0) {
+    if (block != NULL) {
+      me_memory_pool_free(engine->allocator, block);
+    }
     return NULL;
   }
 
