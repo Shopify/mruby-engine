@@ -64,6 +64,9 @@ static void *mruby_engine_allocf(struct mrb_state *state, void *block, size_t si
     return NULL;
   }
 
+  // Some padding in case of overflow... Oh my... 
+  size += 40;
+
   if (block == NULL) {
     block = me_memory_pool_malloc(engine->allocator, size);
   } else {
