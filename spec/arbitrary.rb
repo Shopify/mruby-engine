@@ -1,5 +1,6 @@
 require "bigdecimal"
 require "bigdecimal/util"
+require "securerandom"
 
 module Arbitrary
   refine Fixnum.singleton_class do
