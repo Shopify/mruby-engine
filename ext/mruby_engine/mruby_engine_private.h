@@ -39,8 +39,6 @@ struct me_mruby_engine {
   int64_t ctx_switches_v;
   int64_t ctx_switches_iv;
   int64_t cpu_time_ns;
-
-  mrb_sym sym_to_s;
 };
 
 me_host_exception_t me_eval_err_to_host(struct me_eval_err *err);

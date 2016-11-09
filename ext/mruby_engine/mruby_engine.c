@@ -102,7 +102,7 @@ me_host_exception_t me_mruby_engine_get_exception(struct me_mruby_engine *self) 
   struct RClass *class = mrb_class(self->state, exception);
   mrb_value class_name_obj = mrb_obj_as_string(self->state, mrb_obj_value(class));
   struct RString *class_name = mrb_str_ptr(class_name_obj);
-  mrb_value message = mrb_funcall_argv(self->state, exception, self->sym_to_s, 0, NULL);
+  mrb_value message = mrb_obj_as_string(self->state, exception);
   me_host_exception_t err = me_host_runtime_error_new(
     RSTR_PTR(class_name),
     RSTR_LEN(class_name),
@@ -177,8 +177,6 @@ struct me_mruby_engine *me_mruby_engine_new(
     me_memory_pool_free(allocator, self);
     return NULL;
   }
-
-  self->sym_to_s = mrb_intern_cstr(self->state, "to_s");
 
   mrb_define_class(self->state, "ExitException", mrb_class_get(self->state, "Exception"));
   mrb_define_method(self->state , self->state->kernel_module, "exit", mruby_engine_exit, 1);
