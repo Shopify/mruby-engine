@@ -85,9 +85,9 @@ me_host_exception_t me_mruby_engine_get_exception(struct me_mruby_engine *self) 
     return ME_HOST_NIL;
 
   mrb_value exception = mrb_obj_value(self->state->exc);
-
+  self->state->exc = NULL;
+  
   if (mrb_obj_is_kind_of(self->state, exception, mrb_class_get(self->state, "ExitException"))) {
-    self->state->exc = NULL;
     return ME_HOST_NIL;
   }
 
