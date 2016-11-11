@@ -8,6 +8,7 @@
 #include <mruby/hash.h>
 #include <mruby/opcode.h>
 #include <mruby/string.h>
+#include <mruby/throw.h>
 #include <mruby/variable.h>
 #include <stdlib.h>
 
@@ -209,10 +210,28 @@ static struct RProc *generate_code(
   const char *source,
   me_host_exception_t *err)
 {
+  struct mrb_jmpbuf *previous = state->jmp;
+  struct mrb_jmpbuf p_jmp;
+  state->jmp = &p_jmp;
   struct mrb_parser_state *parser_state = mrb_parser_new(state);
   parser_state->s = source;
   parser_state->send = source + strlen(source);
-  mrb_parser_parse(parser_state, context);
+
+  MRB_TRY(state->jmp) {
+    mrb_parser_parse(parser_state, context);
+  }
+  MRB_CATCH(state->jmp) {
+    state->exc = NULL;
+    if (parser_state->nerr < 1) {
+      *err = me_host_internal_error_new("code parsing failed");
+      mrb_parser_free(parser_state);
+      state->jmp = previous;
+      return NULL;
+    }
+  }
+  MRB_END_EXC(state->jmp);
+  state->jmp = previous;
+
   if (parser_state->nerr > 0) {
     *err = me_host_syntax_error_new(
       parser_state->filename,
