@@ -396,6 +396,10 @@ size_t me_iseq_size(struct me_iseq *iseq) {
   return iseq->size;
 }
 
+void *me_iseq_data(struct me_iseq *iseq) {
+  return iseq->data;
+}
+
 static const uint32_t HASH_FACTOR = 65599;
 
 uint32_t me_iseq_hash(struct me_iseq *iseq) {

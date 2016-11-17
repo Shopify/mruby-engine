@@ -496,9 +496,17 @@ RSpec.describe MRubyEngine do
     end
 
     describe :size do
-      it "yields to size of the compiled instructions" do
+      it "yields the size of the compiled instructions" do
         iseq = MRubyEngine::InstructionSequence.new([["sample.rb", "@foo = 42"]])
         expect(iseq.size).to be > 0
+      end
+    end
+
+    describe :data do
+      it "returns the compiled instructions" do
+        iseq = MRubyEngine::InstructionSequence.new([["sample.rb", "@foo = 42"]])
+        expect(iseq.data.encoding).to eq(Encoding::ASCII_8BIT)
+        expect(iseq.data.size).to eq(127)
       end
     end
 

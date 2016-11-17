@@ -4,6 +4,7 @@
 #include "mruby_engine.h"
 #include "platform.h"
 #include <ruby.h>
+#include <ruby/encoding.h>
 #include <inttypes.h>
 #include <stdarg.h>
 #include "native_tests.h"
@@ -346,6 +347,11 @@ static VALUE ext_iseq_size(VALUE rself) {
   return ULONG2NUM(me_iseq_size(iseq));
 }
 
+static VALUE ext_iseq_data(VALUE rself) {
+  struct me_iseq *iseq = ext_iseq_unwrap(rself);
+  return rb_enc_str_new(me_iseq_data(iseq), me_iseq_size(iseq), rb_ascii8bit_encoding());
+}
+
 static VALUE ext_iseq_hash(VALUE rself) {
   struct me_iseq *iseq = ext_iseq_unwrap(rself);
 
@@ -387,6 +393,7 @@ void Init_mruby_engine(void) {
   rb_define_alloc_func(me_ext_c_iseq, ext_iseq_alloc);
   rb_define_method(me_ext_c_iseq, "initialize", ext_iseq_initialize, 1);
   rb_define_method(me_ext_c_iseq, "size", ext_iseq_size, 0);
+  rb_define_method(me_ext_c_iseq, "data", ext_iseq_data, 0);
   rb_define_private_method(me_ext_c_iseq, "compute_hash", ext_iseq_hash, 0);
 
   me_ext_e_engine_error = rb_define_class_under(
