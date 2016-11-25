@@ -9,8 +9,9 @@ MRuby::Build.new do |conf|
 
   conf.gembox mruby_engine_gembox_path
   conf.gem core: 'mruby-bin-mirb'
+  conf.gem core: 'mruby-bin-mruby'
 
-  conf.bins = ['mrbc']
+  conf.bins = ['mrbc', 'mruby']
 
   conf.cc do |cc|
     cc.flags += %w(-fPIC)

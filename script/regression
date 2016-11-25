@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require 'pathname'
+
+pwd = Pathname.new(__FILE__).dirname
+mruby = pwd.join('../ext/mruby_engine/mruby/build/host/bin/mruby').to_s
+testdir = pwd.join('../test/regression')
+
+failures = false
+
+Dir.entries(testdir).each do |file|
+  filepath = testdir.join(file)
+  if File.file?(filepath)
+    cmd = "#{mruby} #{filepath}"
+    system(cmd)
+
+    if $?.success?
+      puts "#{file}: all good."
+    else
+      failures = true
+
+      if $?.stopped?
+        puts "#{file}: Stopped (#{$?.stopsig})"
+      elsif $?.signaled?
+        puts "#{file}: Signaled (#{$?.termsig})"
+      elsif $?.exited?
+        puts "#{file}: Signaled (#{$?.exitstatus})"
+      else
+        puts "#{file}: unknown term signal: #{$?.methods} (#{$?})"
+      end
+    end
+  end
+end
+
+raise "Regression tests failed" if failures
