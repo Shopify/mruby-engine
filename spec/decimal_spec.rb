@@ -80,6 +80,20 @@ describe "Decimal" do
         SOURCE
       end
     end
+
+    it "works if Decimal class is replaced" do
+      eval_test(<<-SOURCE)
+        begin
+          a = Decimal.new(1)
+          old_decimal = Decimal
+          Decimal = Hash
+          assert_equal("-1", (-a).to_s)
+          assert_equal("2", (a+a).to_s)
+        ensure
+          Decimal = old_decimal
+        end
+      SOURCE
+    end
   end
 
   describe :+ do
