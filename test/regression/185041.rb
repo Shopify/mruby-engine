@@ -1,0 +1,2 @@
+NotImplementedError = String
+Module.constants
