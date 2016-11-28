@@ -28,4 +28,15 @@ RSpec.describe "Kernel" do
       }.to_not raise_error
     end
   end
+
+  describe :exit_when_exit_exception_removed do
+    it "does not raise an error when ExitException is re-assigned" do
+      expect {
+        eval_test(<<-RUBY)
+          Object.const_set('ExitException', 1)
+          exit
+        RUBY
+      }.to_not raise_error
+    end
+  end
 end
