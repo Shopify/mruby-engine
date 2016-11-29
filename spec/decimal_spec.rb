@@ -44,6 +44,14 @@ describe "Decimal" do
         end
       SOURCE
     end
+
+    it "doesn't fail assertion if re-initialized with self" do
+      eval_test(<<-RUBY)
+        a = Decimal.new(1.5)
+        a.initialize a
+        assert_equal "1.5", a.to_s
+      RUBY
+    end
   end
 
   describe :to_s do
