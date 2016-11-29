@@ -36,9 +36,10 @@ static me_host_value_t me_value_to_host_r(
     return me_value_host_string_new(RSTRING_PTR(value), RSTRING_LEN(value), err);
   case MRB_TT_SYMBOL:
     {
-      mrb_value s = mrb_check_convert_type(
-        self->state, value, MRB_TT_STRING, "String", "to_s");
-      return me_value_host_symbol_new(RSTRING_PTR(s), RSTRING_LEN(s), err);
+      mrb_int len;
+      const char *p = mrb_sym2name_len(self->state, mrb_symbol(value), &len);
+
+      return me_value_host_symbol_new(p, len, err);
     }
   case MRB_TT_ARRAY:
     {
