@@ -69,6 +69,10 @@ static mrb_value ext_decimal_initialize(mrb_state *state, mrb_value self) {
   mrb_value value = mrb_fixnum_value(0);
   mrb_get_args(state, "|o", &value);
 
+  if (mrb_obj_equal(state, self, value)) {
+    return self;
+  }
+
   mrb_value wrapped_context = mrb_proc_cfunc_env_get(state, 0);
   mpd_context_t *context = mrb_data_check_get_ptr(state, wrapped_context, &CONTEXT_DATA_TYPE);
 
