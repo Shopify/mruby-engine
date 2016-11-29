@@ -263,6 +263,11 @@ RSpec.describe MRubyEngine do
       expect(engine.extract("@hello")).to eq(:hello)
     end
 
+    it "extract a broken symbol" do
+      engine.sandbox_eval("hello.rb", "class Symbol; def to_s; 123; end; end; @sym = :sym")
+      expect(engine.extract("@sym")).to eq(:sym)
+    end
+
     it "extracts a fixnum" do
       engine.sandbox_eval("hello.rb", %(@hello = 42))
       expect(engine.extract("@hello")).to eq(42)
