@@ -1,6 +1,6 @@
 begin
   NotImplementedError = String
   Module.constants
-rescue RuntimeError
+rescue RuntimeError, TypeError
   # no crash
 end
