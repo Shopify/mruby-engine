@@ -9,7 +9,7 @@
     @a << l
   end
 
-  unless @a == (["a"*0xf + "\n"] * N)
+  unless @a == (["a"*0xf + "\n"] * N) || @a == ["a"*0xf + "\n"]
     raise "regression test failed"
   end
 end
