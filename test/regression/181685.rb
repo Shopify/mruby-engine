@@ -1,2 +1,6 @@
 Range.remove_method(:initialize_copy)
-(1..2).dup.to_s
+begin
+  (1..2).dup.to_s
+rescue ArgumentError
+  # no crash
+end
