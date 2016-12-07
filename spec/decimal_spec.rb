@@ -39,8 +39,9 @@ describe "Decimal" do
 
     it "raises if passed an object not responding to :to_d" do
       eval_test(<<-SOURCE)
-        assert_raises(ArgumentError, "can't convert #<Object:0x0> into Decimal") do
-          Decimal.new(Object.new)
+        instance = Object.new
+        assert_raises(ArgumentError, "can't convert " + instance.to_s + " into Decimal") do
+          Decimal.new(instance)
         end
       SOURCE
     end
