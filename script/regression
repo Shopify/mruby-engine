@@ -2,7 +2,7 @@
 
 require 'pathname'
 
-SYNTAX_ERROR_EXPECTED = %w(183356.rb)
+SYNTAX_ERROR_EXPECTED = %w(183356.rb 187305-1.rb 187305-2.rb)
 
 def expected_result?(file)
   return true if $?.success?
