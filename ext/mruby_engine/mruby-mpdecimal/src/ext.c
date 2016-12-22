@@ -32,13 +32,13 @@ static void decimal_free(mrb_state *state, void *data) {
 static const struct mrb_data_type CONTEXT_DATA_TYPE = { "MpdContext", context_free };
 static const struct mrb_data_type DECIMAL_DATA_TYPE = { "Mpd", decimal_free };
 
-static mrb_value wrap_decimal(mrb_state *state, mpd_context_t *context, mpd_t *decimal) {
+static mrb_value wrap_decimal(mrb_state *state, struct RClass *klass, mpd_context_t *context, mpd_t *decimal) {
   struct decimal_t *wrapper = mrb_malloc(state, sizeof(struct decimal_t));
   wrapper->context = context;
   wrapper->decimal = decimal;
   struct RData *result = mrb_data_object_alloc(
     state,
-    mrb_class_get(state, "Decimal"),
+    klass,
     wrapper,
     &DECIMAL_DATA_TYPE);
   return mrb_obj_value(result);
@@ -103,7 +103,7 @@ static mrb_value ext_decimal_unary_op(mrb_state *state, mrb_value rself, unary_o
 
   uint32_t status = 0;
   op(result, self->decimal, self->context, &status);
-  mrb_value rresult = wrap_decimal(state, self->context, result);
+  mrb_value rresult = wrap_decimal(state, mrb_class(state, rself), self->context, result);
   check_status(state, status);
 
   return rresult;
@@ -119,7 +119,7 @@ static mrb_value ext_decimal_bin_op(mrb_state *state, mrb_value rself, binary_op
 
   uint32_t status = 0;
   op(result, self->decimal, other->decimal, self->context, &status);
-  mrb_value rresult = wrap_decimal(state, self->context, result);
+  mrb_value rresult = wrap_decimal(state, mrb_class(state, rself), self->context, result);
   check_status(state, status);
 
   return rresult;
