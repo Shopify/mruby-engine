@@ -501,14 +501,14 @@ mrb_time_initialize(mrb_state *mrb, mrb_value self)
     amin = 0, asec = 0, ausec = 0;
   struct mrb_time *tm;
 
+  mrb_get_args(
+    mrb, "|iiiiiii", &ayear, &amonth, &aday, &ahour, &amin, &asec, &ausec);
   tm = (struct mrb_time*)DATA_PTR(self);
   if (tm) {
     mrb_free(mrb, tm);
   }
   mrb_data_init(self, NULL, &mrb_time_type);
 
-  mrb_get_args(
-    mrb, "|iiiiiii", &ayear, &amonth, &aday, &ahour, &amin, &asec, &ausec);
   tm = time_mktime(
     mrb, ayear, amonth, aday, ahour, amin, asec, ausec, MRB_TIMEZONE_UTC);
   mrb_data_init(self, tm, &mrb_time_type);
