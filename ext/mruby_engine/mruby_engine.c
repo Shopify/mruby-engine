@@ -12,6 +12,14 @@
 #include <mruby/variable.h>
 #include <stdlib.h>
 
+#define ME_EXIT_EXCEPTION_CLASS_VARIABLE "_me_exit_exception_class_"
+
+static struct RClass *get_exit_exception_class(struct mrb_state *state) {
+  mrb_value c = mrb_gv_get(state, mrb_intern_lit(state, ME_EXIT_EXCEPTION_CLASS_VARIABLE));
+  mrb_check_type(state, c, MRB_TT_CLASS);
+  return mrb_class_ptr(c);
+}
+
 static const uint64_t COMPILER_INSTRUCTION_QUOTA = 100000;
 static const struct timespec COMPILER_TIME_QUOTA = { 1, 0 };
 
@@ -87,8 +95,8 @@ me_host_exception_t me_mruby_engine_get_exception(struct me_mruby_engine *self) 
 
   mrb_value exception = mrb_obj_value(self->state->exc);
   self->state->exc = NULL;
-  
-  if (mrb_obj_is_kind_of(self->state, exception, mrb_class_get(self->state, "ExitException"))) {
+
+  if (mrb_obj_is_kind_of(self->state, exception, get_exit_exception_class(self->state))) {
     return ME_HOST_NIL;
   }
 
@@ -161,7 +169,8 @@ static void mruby_engine_code_fetch_hook(
 }
 
 static mrb_value mruby_engine_exit(struct mrb_state *state, mrb_value rvalue) {
-  mrb_raise(state, mrb_class_get(state, "ExitException"), "exit exception");
+  struct RClass *c = get_exit_exception_class(state);
+  mrb_raise(state, c, "exit exception");
   return rvalue;
 }
 
@@ -170,6 +179,7 @@ struct me_mruby_engine *me_mruby_engine_new(
   uint64_t instruction_quota,
   struct timespec time_quota)
 {
+  struct RClass *eExitException_class;
   struct me_mruby_engine *self = me_memory_pool_malloc(allocator, sizeof(struct me_mruby_engine));
   self->allocator = allocator;
   self->state = mrb_open_allocf(mruby_engine_allocf, self);
@@ -178,9 +188,9 @@ struct me_mruby_engine *me_mruby_engine_new(
     me_memory_pool_free(allocator, self);
     return NULL;
   }
-
-  mrb_define_class(self->state, "ExitException", mrb_class_get(self->state, "Exception"));
-  mrb_define_method(self->state , self->state->kernel_module, "exit", mruby_engine_exit, 1);
+  eExitException_class = mrb_define_class(self->state, "ExitException", self->state->eException_class);
+  mrb_gv_set(self->state, mrb_intern_lit(self->state, ME_EXIT_EXCEPTION_CLASS_VARIABLE), mrb_obj_value(eExitException_class));
+  mrb_define_method(self->state, self->state->kernel_module, "exit", mruby_engine_exit, 1);
 
   self->instruction_quota = instruction_quota;
   self->instruction_count = 0;
@@ -413,6 +423,10 @@ void me_iseq_destroy(struct me_iseq *iseq) {
 
 size_t me_iseq_size(struct me_iseq *iseq) {
   return iseq->size;
+}
+
+void *me_iseq_data(struct me_iseq *iseq) {
+  return iseq->data;
 }
 
 static const uint32_t HASH_FACTOR = 65599;

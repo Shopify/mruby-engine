@@ -91,6 +91,7 @@ struct me_iseq *me_iseq_new(
   struct me_iseq_err *err);
 void me_iseq_destroy(struct me_iseq *);
 size_t me_iseq_size(struct me_iseq *);
+void *me_iseq_data(struct me_iseq *);
 uint32_t me_iseq_hash(struct me_iseq *);
 
 #endif

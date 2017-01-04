@@ -263,6 +263,11 @@ RSpec.describe MRubyEngine do
       expect(engine.extract("@hello")).to eq(:hello)
     end
 
+    it "extract a broken symbol" do
+      engine.sandbox_eval("hello.rb", "class Symbol; def to_s; 123; end; end; @sym = :sym")
+      expect(engine.extract("@sym")).to eq(:sym)
+    end
+
     it "extracts a fixnum" do
       engine.sandbox_eval("hello.rb", %(@hello = 42))
       expect(engine.extract("@hello")).to eq(42)
@@ -496,9 +501,17 @@ RSpec.describe MRubyEngine do
     end
 
     describe :size do
-      it "yields to size of the compiled instructions" do
+      it "yields the size of the compiled instructions" do
         iseq = MRubyEngine::InstructionSequence.new([["sample.rb", "@foo = 42"]])
         expect(iseq.size).to be > 0
+      end
+    end
+
+    describe :data do
+      it "returns the compiled instructions" do
+        iseq = MRubyEngine::InstructionSequence.new([["sample.rb", "@foo = 42"]])
+        expect(iseq.data.encoding).to eq(Encoding::ASCII_8BIT)
+        expect(iseq.data.size).to eq(127)
       end
     end
 

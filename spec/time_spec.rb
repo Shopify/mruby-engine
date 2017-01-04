@@ -77,4 +77,12 @@ describe "Time" do
       refute_respond_to(Time, :getlocal)
     SOURCE
   end
+
+  it "raises if time is out of range" do
+    eval_test(<<-SOURCE)
+      assert_raises(ArgumentError, "9.3674872249306e+17 out of Time range") do
+        Time.at(0xd00000000000000)
+      end
+    SOURCE
+  end
 end
