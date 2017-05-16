@@ -406,7 +406,7 @@ RSpec.describe MRubyEngine do
       end.to raise_error(MRubyEngine::EngineTimeQuotaError, "exceeded quota of 100 ms.")
     end
 
-    it "raises an EngineStackExhaustedError when the stack is about to overflow" do
+    it "raises an EngineRuntimeError, 'stack level too deep' when the stack is about to overflow" do
       skip("Not supported on #{RUBY_PLATFORM}.") unless RUBY_PLATFORM =~ /linux/
       expect do
         engine.sandbox_eval("recursive_initialize.rb", <<-SOURCE)
@@ -417,7 +417,7 @@ RSpec.describe MRubyEngine do
           end
           A.new
         SOURCE
-      end.to raise_error(MRubyEngine::EngineStackExhaustedError, "stack exhausted")
+      end.to raise_error(MRubyEngine::EngineRuntimeError, "stack level too deep")
     end
 
     it "memory quota reached block next instruction eval " do
