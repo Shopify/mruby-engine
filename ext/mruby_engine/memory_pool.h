@@ -31,6 +31,8 @@ struct meminfo {
   size_t hblkhd;   /* space in mmapped regions */
   size_t uordblks; /* total allocated space */
   size_t fordblks; /* total free space */
+  size_t malloc_size;
+  unsigned long malloc_count;
 };
 
 struct me_memory_pool;

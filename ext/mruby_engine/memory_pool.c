@@ -15,10 +15,14 @@
 #error "this gem requires anonymous memory regions"
 #endif
 
+#define barrier() __asm__ __volatile__("mfence": : :"memory")
+
 struct me_memory_pool {
   mspace mspace;
   uint8_t *start;
   size_t capacity;
+  size_t malloc_size;
+  unsigned long malloc_count;
 };
 
 #define CAPACITY_MIN ((size_t)(256 * KiB))
@@ -59,18 +63,23 @@ struct me_memory_pool *me_memory_pool_new(size_t capacity, struct me_memory_pool
   self->mspace = mspace;
   self->start = bytes;
   self->capacity = rounded_capacity;
+  self->malloc_size = 0;
+  self->malloc_count = 0;
 
   err->type = ME_MEMORY_POOL_NO_ERR;
   return self;
 }
 
 struct meminfo me_memory_pool_info(struct me_memory_pool *self) {
+  barrier();
   struct meminfo info;
   struct mallinfo dlinfo = mspace_mallinfo(self->mspace);
   info.arena = dlinfo.arena;
   info.hblkhd = dlinfo.hblkhd;
   info.uordblks = dlinfo.uordblks;
   info.fordblks = dlinfo.fordblks;
+  info.malloc_size = self->malloc_size;
+  info.malloc_count = self->malloc_count;
   return info;
 }
 
@@ -79,6 +88,9 @@ size_t me_memory_pool_get_capacity(struct me_memory_pool *self) {
 }
 
 void *me_memory_pool_malloc(struct me_memory_pool *self, size_t size) {
+  self->malloc_size += size;
+  self->malloc_count++;
+  barrier();
   return mspace_malloc(self->mspace, size);
 }
 
