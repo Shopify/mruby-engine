@@ -1391,6 +1391,7 @@ DLMALLOC_EXPORT size_t mspace_max_footprint(mspace msp);
   the given space.
 */
 DLMALLOC_EXPORT struct mallinfo mspace_mallinfo(mspace msp);
+void log_stuff(mspace msp);
 #endif /* NO_MALLINFO */
 
 /*
