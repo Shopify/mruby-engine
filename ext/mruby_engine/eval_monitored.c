@@ -157,7 +157,7 @@ void me_mruby_engine_eval(
   int bypass_ctx = getrusage(RUSAGE_SELF, &ru_then);
 
   clockid_t cid;
-  if (err_no = pthread_getcpuclockid(thread, &cid)) {
+  if ((err_no = pthread_getcpuclockid(thread, &cid))) {
     self->cpu_time_ns = err_no * -1; // -(ENOENT = 2 || ESRCH = 3)
   }
 
@@ -172,7 +172,7 @@ void me_mruby_engine_eval(
 
   if (!self->cpu_time_ns) {
     struct timespec ts;
-    if (err_no = clock_gettime(cid, &ts)) {
+    if ((err_no = clock_gettime(cid, &ts))) {
       self->cpu_time_ns = err_no * -1; // -(EINVAL = 22 || EFAULT == 14)
     } else {
       self->cpu_time_ns = ts.tv_sec * 1000000000 + ts.tv_nsec;
