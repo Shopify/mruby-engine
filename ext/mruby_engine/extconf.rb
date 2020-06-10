@@ -8,9 +8,9 @@ include FileUtils
 
 Dir.chdir(Pathname.new(__dir__).join("../..")) do
   if RUBY_VERSION >= '2.7'
-    sed = 'sed'
-    sed = 'gsed' if RUBY_PLATFORM.match?(/darwin/i)
-    sh(sed, "-i", "-e", 's/{ :verbose => $verbose }/verbose: $verbose/', "ext/mruby_engine/mruby/Rakefile")
+    extra_args = []
+    extra_args << '' if RUBY_PLATFORM.match?(/darwin/i)
+    sh('sed', "-i", *extra_args, 's/{ :verbose => $verbose }/verbose: $verbose/', "ext/mruby_engine/mruby/Rakefile")
   end
   sh("script/mkmruby", "compile")
 end
