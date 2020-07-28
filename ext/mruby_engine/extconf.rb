@@ -35,6 +35,6 @@ end
 $CFLAGS << ' -std=gnu99 -fvisibility=hidden -Wno-declaration-after-statement '
 $CFLAGS << " #{Flags.cflags.join(' ')} "
 $CFLAGS << " #{Flags.defines.map { |define| "-D#{define}" }.join(' ')} "
-$CFLAGS << " -Werror " if ENV["CI"]
+$CFLAGS << " -Werror " if ENV["W_ERROR"]
 
 create_makefile 'mruby_engine/mruby_engine'

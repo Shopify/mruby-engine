@@ -1,5 +1,8 @@
 language: ruby
 
+env:
+  W_ERROR: "1"
+
 rvm:
   - 2.6
   - 2.7
