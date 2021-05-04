@@ -32,6 +32,10 @@ if RUBY_PLATFORM =~ /linux/
   end
 end
 
+if ENV["W_ERROR"]
+  $CFLAGS.clear # GitHub Actions has some invalid CFLAGS by default...
+end
+
 $CFLAGS << ' -std=gnu99 -fvisibility=hidden -Wno-declaration-after-statement '
 $CFLAGS << " #{Flags.cflags.join(' ')} "
 $CFLAGS << " #{Flags.defines.map { |define| "-D#{define}" }.join(' ')} "
