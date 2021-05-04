@@ -14,6 +14,13 @@ unless have_func("rb_thread_call_without_gvl")
   abort("rb_thread_call_without_gvl not found: do you have Ruby >= 2.0?")
 end
 
+if RUBY_VERSION >= '3.1'
+  module MakeMakefile
+    # "Revert" of https://github.com/ruby/ruby/commit/4b6fd8329b46701414aba2eeca10013cf66ec513
+    alias_method :try_header, (config_string('try_header') || :try_cpp)
+  end
+end
+
 unless find_header 'mruby.h', File.expand_path('../mruby/include/', __FILE__)
   abort 'missing mruby.h: did you clone the submodule?'
 end
