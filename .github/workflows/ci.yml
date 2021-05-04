@@ -1,0 +1,32 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  rubies:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: [ ruby-head, '3.0', '2.7', '2.6' ]
+    env:
+      W_ERROR: '1'
+    steps:
+      - name: Install APT packages
+        run: sudo apt-get install libunwind8-dev
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - name: Update Rubygems
+        run: gem update --system
+      - name: Install dependencies
+        run: bundle install
+      - name: Run test
+        run: rake
+      - name: Install gem
+        run: rake install
