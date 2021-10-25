@@ -44,10 +44,7 @@ RSpec.describe MRubyEngine do
     it "refuses to allocate ludicrously small amount of memory" do
       expect {
         MRubyEngine.new(8, reasonable_instruction_quota, reasonable_time_quota)
-      }.to raise_error(ArgumentError, squish(<<-MESSAGE))
-        memory pool must be between 256KiB and 262144KiB (requested 8B rounded
-        to 4KiB)
-      MESSAGE
+      }.to raise_error(ArgumentError, /^memory pool must be between 256KiB and 262144KiB/)
     end
   end
 
