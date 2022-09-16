@@ -26,7 +26,7 @@ unless find_header 'mruby.h', File.expand_path('../mruby/include/', __FILE__)
 end
 
 unless find_header 'libunwind.h'
-  abort 'missing libunwind.h: did you install libunwind? Make sure to provision your vagrant.'
+  abort 'missing libunwind.h: did you install libunwind?'
 end
 
 unless find_library 'mruby', 'mrb_open', File.expand_path('../mruby/build/sandbox/lib/', __FILE__)
@@ -35,7 +35,7 @@ end
 
 if RUBY_PLATFORM =~ /linux/
   unless find_library 'unwind', 'abort'
-    abort 'missing libunwind.a: did you install libunwind? Make sure to provision your vagrant.'
+    abort 'missing libunwind.a: did you install libunwind?'
   end
 end
 
