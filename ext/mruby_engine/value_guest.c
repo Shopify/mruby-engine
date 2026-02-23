@@ -48,7 +48,7 @@ static me_host_value_t me_value_to_host_r(
         return ME_HOST_NIL;
       }
 
-      for (mrb_int i = 0, f = mrb_ary_len(self->state, value); i < f; ++i) {
+      for (mrb_int i = 0, f = RARRAY_LEN(value); i < f; ++i) {
         me_host_value_t element = me_value_to_host_r(
           self, mrb_ary_ref(self->state, value, i), depth + 1, err);
         if (err->type != ME_VALUE_NO_ERR) {
@@ -69,20 +69,19 @@ static me_host_value_t me_value_to_host_r(
         return ME_HOST_NIL;
       }
 
-      struct kh_ht *kh = mrb_hash_tbl(self->state, value);
-      for (int i = kh_begin(kh), f = kh_end(kh); i < f; ++i) {
-        if (!kh_exist(kh, i)) {
-          continue;
-        }
+      mrb_value keys = mrb_hash_keys(self->state, value);
+      mrb_int len = RARRAY_LEN(keys);
+      for (mrb_int i = 0; i < len; ++i) {
+        mrb_value k = mrb_ary_ref(self->state, keys, i);
 
         me_host_value_t key = me_value_to_host_r(
-          self, kh_key(kh, i), depth + 1, err);
+          self, k, depth + 1, err);
         if (err->type != ME_VALUE_NO_ERR) {
           return ME_HOST_NIL;
         }
 
         me_host_value_t element = me_value_to_host_r(
-          self, kh_value(kh, i).v, depth + 1, err);
+          self, mrb_hash_get(self->state, value, k), depth + 1, err);
         if (err->type != ME_VALUE_NO_ERR) {
           return ME_HOST_NIL;
         }

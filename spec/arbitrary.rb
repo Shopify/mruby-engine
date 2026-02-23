@@ -3,7 +3,7 @@ require "bigdecimal/util"
 require "securerandom"
 
 module Arbitrary
-  refine Fixnum.singleton_class do
+  refine Integer.singleton_class do
     def arbitrary
       lambda do
         if SecureRandom.random_number(2) == 0
@@ -21,7 +21,7 @@ module Arbitrary
     end
   end
 
-  refine Fixnum do
+  refine Integer do
     def shrink
       if self > 2 || -2 < self
         [(self / 2).to_i]
@@ -34,7 +34,7 @@ module Arbitrary
   refine BigDecimal.singleton_class do
     def arbitrary
       lambda do
-        "#{Fixnum.arbitrary.call}.#{Fixnum.arbitrary_natural.call}".to_d
+        "#{Integer.arbitrary.call}.#{Integer.arbitrary_natural.call}".to_d
       end
     end
   end

@@ -144,8 +144,8 @@ RSpec.describe MRubyEngine do
       SOURCE
     }.to raise_error(MRubyEngine::EngineRuntimeError) do |e|
       expect(e.guest_backtrace).to eq([
-        "backtrace.rb:2:in Object.foo",
-        "backtrace.rb:6:in Object.bar",
+        "backtrace.rb:2:in foo",
+        "backtrace.rb:6:in bar",
         "backtrace.rb:9",
       ])
     end
@@ -183,7 +183,7 @@ RSpec.describe MRubyEngine do
         raise(TransmogrificationError, "This looks bad.")
       SOURCE
     }.to raise_error(MRubyEngine::EngineRuntimeError) do |e|
-      expect(e.type).to match(/\A#<Class:0x\h+>\z/)
+      expect(e.type).to match(/\ATransmogrificationError\z|\A#<Class:0x\h+>\z/)
     end
   end
 
@@ -508,7 +508,7 @@ RSpec.describe MRubyEngine do
       it "returns the compiled instructions" do
         iseq = MRubyEngine::InstructionSequence.new([["sample.rb", "@foo = 42"]])
         expect(iseq.data.encoding).to eq(Encoding::ASCII_8BIT)
-        expect(iseq.data.size).to eq(127)
+        expect(iseq.data.size).to eq(136)
       end
     end
 

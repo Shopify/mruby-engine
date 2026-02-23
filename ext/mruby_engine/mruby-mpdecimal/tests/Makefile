@@ -5,9 +5,9 @@ LD = gcc
 AR = ar
 
 MPD_WARN = -Wall -W -Wno-unknown-pragmas -std=c99 -pedantic
-MPD_CONFIG = -DCONFIG_64 -DASM
+MPD_CONFIG = -DCONFIG_64 -DANSI -DHAVE_UINT128_T
 
-CONFIGURE_CFLAGS = -ggdb -Wall -W -Wno-unknown-pragmas -std=c99 -pedantic -DCONFIG_64 -DASM -O0
+CONFIGURE_CFLAGS = -ggdb -Wall -W -Wno-unknown-pragmas -std=c99 -pedantic -DCONFIG_64 -DANSI -DHAVE_UINT128_T -O0
 CFLAGS ?= $(CONFIGURE_CFLAGS)
 
 HEADERS = $(wildcard $(SRCDIR)/*.h)

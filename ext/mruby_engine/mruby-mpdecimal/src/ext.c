@@ -267,11 +267,13 @@ void mrb_mruby_mpdecimal_gem_init(mrb_state *state) {
   struct RClass *c_decimal = mrb_define_class(state, "Decimal", state->object_class);
   MRB_SET_INSTANCE_TT(c_decimal, MRB_TT_DATA);
 
+  mrb_method_t method;
+  MRB_METHOD_FROM_PROC(method, mrb_proc_new_cfunc_with_env(state, ext_decimal_initialize, 1, &context));
   mrb_define_method_raw(
     state,
     c_decimal,
     mrb_intern_cstr(state, "initialize"),
-    mrb_proc_new_cfunc_with_env(state, ext_decimal_initialize, 1, &context));
+    method);
   mrb_define_method(state, c_decimal, "+", ext_decimal_add, MRB_ARGS_REQ(1));
   mrb_define_method(state, c_decimal, "-", ext_decimal_sub, MRB_ARGS_REQ(1));
   mrb_define_method(state, c_decimal, "*", ext_decimal_mul, MRB_ARGS_REQ(1));
