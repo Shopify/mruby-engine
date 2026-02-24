@@ -3,10 +3,6 @@
 
 #define ONLY_MSPACES 1
 
-// Ruby may also define this
-#ifndef HAVE_MREMAP
-#define HAVE_MREMAP 0
-#endif
 //#define FOOTERS 1
 
 #include "host.h"
