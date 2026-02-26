@@ -31,6 +31,11 @@ MRuby::Build.new do |conf|
     cc.flags += Flags.cflags
     cc.defines += Flags.io_safe_defines
   end
+
+  # Use the C compiler as the linker driver so that libc is linked
+  # automatically. ENV['LD'] may be a raw linker (e.g. 'ld') which
+  # does not link the C runtime by default.
+  conf.linker.command = conf.cc.command
 end
 
 MRuby::CrossBuild.new('sandbox') do |conf|
@@ -47,4 +52,6 @@ MRuby::CrossBuild.new('sandbox') do |conf|
     cc.flags += Flags.cflags
     cc.defines += Flags.defines
   end
+
+  conf.linker.command = conf.cc.command
 end
