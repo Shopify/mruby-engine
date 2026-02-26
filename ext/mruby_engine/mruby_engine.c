@@ -139,7 +139,7 @@ static void mruby_engine_check_stack(
 static void mruby_engine_code_fetch_hook(
   struct mrb_state* mrb,
   struct mrb_irep *irep,
-  const mrb_code *pc,
+  mrb_code *pc,
   mrb_value *regs)
 {
   (void)irep;
@@ -244,7 +244,7 @@ static struct RProc *generate_code(
 
   if (parser_state->nerr > 0) {
     *err = me_host_syntax_error_new(
-      mrb_sym_name(state, parser_state->filename_sym),
+      parser_state->filename,
       parser_state->error_buffer[0].lineno,
       parser_state->error_buffer[0].column,
       parser_state->error_buffer[0].message);
