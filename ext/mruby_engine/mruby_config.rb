@@ -1,9 +1,22 @@
 require_relative './flag_helper'
 
+def detect_toolchain
+  if ENV['VisualStudioVersion'] || ENV['VSINSTALLDIR']
+    :visualcpp
+  else
+    cc = ENV['CC'] || 'cc'
+    if `#{cc} --version 2>&1` =~ /clang/i
+      :clang
+    else
+      :gcc
+    end
+  end
+end
+
 mruby_engine_gembox_path = Pathname.new(__FILE__).dirname.join('mruby_engine')
 
 MRuby::Build.new do |conf|
-  toolchain :gcc
+  toolchain detect_toolchain
 
   enable_debug
 
@@ -21,7 +34,7 @@ MRuby::Build.new do |conf|
 end
 
 MRuby::CrossBuild.new('sandbox') do |conf|
-  toolchain :gcc
+  toolchain detect_toolchain
 
   enable_debug
 
