@@ -1,4 +1,4 @@
 [submodule "ext/mruby_engine/mruby"]
 	path = ext/mruby_engine/mruby
 	url = https://github.com/Shopify/mruby.git
-	branch = jringer/better-distinguish-clang
+	branch = mruby-engine-submodule
