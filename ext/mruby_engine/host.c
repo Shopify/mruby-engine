@@ -4,6 +4,7 @@
 #include <libunwind.h>
 #include <ruby.h>
 #include <ruby/thread.h>
+#include <stdio.h>
 #include <string.h>
 
 const intptr_t ME_HOST_NIL = Qnil;

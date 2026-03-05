@@ -102,7 +102,7 @@ me_host_exception_t me_mruby_engine_get_exception(struct me_mruby_engine *self) 
 
   intptr_t host_backtrace = me_host_backtrace_new();
   mrb_value backtrace = mrb_exc_backtrace(self->state, exception);
-  mrb_int backtrace_len = mrb_ary_len(self->state, backtrace);
+  mrb_int backtrace_len = RARRAY_LEN(backtrace);
   for (int i = 0; i < backtrace_len; ++i) {
     mrb_value location = mrb_ary_entry(backtrace, i);
     me_host_backtrace_push_location(host_backtrace, mrb_string_value_cstr(self->state, &location));
@@ -393,7 +393,7 @@ struct me_iseq *me_iseq_new(
   int status = mrb_dump_irep(
     engine->state,
     irep,
-    DUMP_DEBUG_INFO | DUMP_ENDIAN_NAT,
+    DUMP_DEBUG_INFO,
     &irep_data,
     &irep_data_size);
   if (status == MRB_DUMP_OK) {

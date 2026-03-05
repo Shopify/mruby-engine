@@ -1,9 +1,22 @@
 require_relative './flag_helper'
 
+def detect_toolchain
+  if ENV['VisualStudioVersion'] || ENV['VSINSTALLDIR']
+    :visualcpp
+  else
+    cc = ENV['CC'] || 'cc'
+    if `#{cc} --version 2>&1` =~ /clang/i
+      :clang
+    else
+      :gcc
+    end
+  end
+end
+
 mruby_engine_gembox_path = Pathname.new(__FILE__).dirname.join('mruby_engine')
 
 MRuby::Build.new do |conf|
-  toolchain :gcc
+  toolchain detect_toolchain
 
   enable_debug
 
@@ -18,10 +31,15 @@ MRuby::Build.new do |conf|
     cc.flags += Flags.cflags
     cc.defines += Flags.io_safe_defines
   end
+
+  # Use the C compiler as the linker driver so that libc is linked
+  # automatically. ENV['LD'] may be a raw linker (e.g. 'ld') which
+  # does not link the C runtime by default.
+  conf.linker.command = conf.cc.command
 end
 
 MRuby::CrossBuild.new('sandbox') do |conf|
-  toolchain :gcc
+  toolchain detect_toolchain
 
   enable_debug
 
@@ -34,4 +52,6 @@ MRuby::CrossBuild.new('sandbox') do |conf|
     cc.flags += Flags.cflags
     cc.defines += Flags.defines
   end
+
+  conf.linker.command = conf.cc.command
 end
