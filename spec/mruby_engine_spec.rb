@@ -120,7 +120,7 @@ RSpec.describe MRubyEngine do
   it "raises on a syntax error" do
     expect {
       engine.sandbox_eval("syntax_error.rb", "(")
-    }.to raise_error(MRubyEngine::EngineSyntaxError, "syntax_error.rb:1:1: syntax error, unexpected $end")
+    }.to raise_error(MRubyEngine::EngineSyntaxError, "syntax_error.rb:1:1: syntax error")
   end
 
   it "raises if script raised an error" do
@@ -144,8 +144,8 @@ RSpec.describe MRubyEngine do
       SOURCE
     }.to raise_error(MRubyEngine::EngineRuntimeError) do |e|
       expect(e.guest_backtrace).to eq([
-        "backtrace.rb:2:in foo",
-        "backtrace.rb:6:in bar",
+        "backtrace.rb:2:in Object.foo",
+        "backtrace.rb:6:in Object.bar",
         "backtrace.rb:9",
       ])
     end
@@ -508,7 +508,7 @@ RSpec.describe MRubyEngine do
       it "returns the compiled instructions" do
         iseq = MRubyEngine::InstructionSequence.new([["sample.rb", "@foo = 42"]])
         expect(iseq.data.encoding).to eq(Encoding::ASCII_8BIT)
-        expect(iseq.data.size).to eq(136)
+        expect(iseq.data.size).to eq(127)
       end
     end
 
@@ -524,7 +524,7 @@ RSpec.describe MRubyEngine do
     it "reports syntax errors" do
       expect do
         MRubyEngine::InstructionSequence.new([["sample.rb", "("]])
-      end.to raise_error(MRubyEngine::EngineSyntaxError, "sample.rb:1:1: syntax error, unexpected $end")
+      end.to raise_error(MRubyEngine::EngineSyntaxError, "sample.rb:1:1: syntax error")
     end
 
     it "reports syntax error with multiple files" do
@@ -532,7 +532,7 @@ RSpec.describe MRubyEngine do
         MRubyEngine::InstructionSequence.new(
           [["sample.rb", "a = 1"], ["sample_2.rb", "("]],
         )
-      end.to raise_error(MRubyEngine::EngineSyntaxError, "sample_2.rb:1:1: syntax error, unexpected $end")
+      end.to raise_error(MRubyEngine::EngineSyntaxError, "sample_2.rb:1:1: syntax error")
     end
   end
 end
