@@ -417,8 +417,8 @@ struct me_iseq *me_iseq_new(
 }
 
 void me_iseq_destroy(struct me_iseq *iseq) {
-  free(iseq->data);
-  free(iseq);
+  me_host_free(iseq->data);
+  me_host_free(iseq);
 }
 
 size_t me_iseq_size(struct me_iseq *iseq) {
