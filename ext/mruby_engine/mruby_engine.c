@@ -12,6 +12,10 @@
 #include <mruby/variable.h>
 #include <stdlib.h>
 
+#if ME_ADDRESS_SANITIZER
+#include <sanitizer/asan_interface.h>
+#endif
+
 #define ME_EXIT_EXCEPTION_CLASS_VARIABLE "_me_exit_exception_class_"
 
 static struct RClass *get_exit_exception_class(struct mrb_state *state) {
@@ -128,8 +132,27 @@ static const ptrdiff_t STACK_MINIMUM = 0x10000;
 static void mruby_engine_check_stack(
   struct me_mruby_engine *self)
 {
+  uint8_t *stack_pointer = (uint8_t *)&stack_pointer;
+
+#if ME_ADDRESS_SANITIZER
+  /*
+   * With detect_stack_use_after_return enabled (the default on Linux), ASan
+   * moves stack frames to a heap-allocated "fake stack", so a frame address
+   * cannot be compared against the thread's real stack bounds. Map it back
+   * to the address the frame would have occupied on the real stack.
+   */
+  void *fake_stack = __asan_get_current_fake_stack();
+  if (fake_stack != NULL) {
+    void *real_stack_address =
+      __asan_addr_is_in_fake_stack(fake_stack, stack_pointer, NULL, NULL);
+    if (real_stack_address != NULL) {
+      stack_pointer = real_stack_address;
+    }
+  }
+#endif
+
   ptrdiff_t stack_remaining =
-    (uint8_t *)&stack_remaining - (uint8_t *)self->eval_state.stack_base;
+    stack_pointer - (uint8_t *)self->eval_state.stack_base;
   if (stack_remaining < STACK_MINIMUM) {
     mruby_engine_signal_stack_exhausted(self);
   }
