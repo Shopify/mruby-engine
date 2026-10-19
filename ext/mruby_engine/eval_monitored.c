@@ -231,7 +231,13 @@ cleanup:
 void me_mruby_engine_eval_leave(struct me_mruby_engine *self, struct me_eval_err err) {
   self->eval_state.err = err;
   self->quota_error_raised = true;
-  pthread_exit(NULL);
+
+  /* Only the eval worker may exit; Ruby threads (compile, inject) must raise. */
+  if (!me_host_thread_p()) {
+    pthread_exit(NULL);
+  }
+
+  me_host_raise(me_eval_err_to_host(&err));
 }
 
 #endif

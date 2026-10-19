@@ -187,6 +187,27 @@ RSpec.describe MRubyEngine do
     end
   end
 
+  describe "memory quota reached outside of the eval thread" do
+    it "raises when compiling source" do
+      mrb_engine = MRubyEngine.new(1 * MEGABYTE, reasonable_instruction_quota, reasonable_time_quota)
+      source = (1..20_000).map { |i| "a#{i} = #{i}" }.join("\n")
+      expect do
+        mrb_engine.sandbox_eval("big.rb", source)
+      end.to raise_error(MRubyEngine::EngineMemoryQuotaError)
+
+      expect {
+        mrb_engine.sandbox_eval("small.rb", "1")
+      }.to raise_error(MRubyEngine::EngineQuotaAlreadyReached)
+    end
+
+    it "raises when injecting" do
+      mrb_engine = MRubyEngine.new(1 * MEGABYTE, reasonable_instruction_quota, reasonable_time_quota)
+      expect do
+        mrb_engine.inject("@big", "x" * (2 * MEGABYTE))
+      end.to raise_error(MRubyEngine::EngineMemoryQuotaError)
+    end
+  end
+
   describe :inject do
     it "raises ArgumentError if not initialized" do
       expect do

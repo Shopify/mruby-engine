@@ -2,6 +2,7 @@
 #define MRUBY_ENGINE_HOST_H
 
 #include "value.h"
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <time.h>
@@ -36,5 +37,6 @@ void me_host_raise(me_host_exception_t exception)
   __attribute__((noreturn));
 
 void *me_host_invoke_unblocking(void *(*)(void *), void *);
+bool me_host_thread_p(void);
 
 #endif

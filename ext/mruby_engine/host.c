@@ -182,3 +182,7 @@ void me_host_raise(me_host_exception_t exception) {
 void *me_host_invoke_unblocking(void *(*f)(void *), void *data) {
   return rb_thread_call_without_gvl(f, data, RUBY_UBF_IO, NULL);
 }
+
+bool me_host_thread_p(void) {
+  return ruby_native_thread_p();
+}

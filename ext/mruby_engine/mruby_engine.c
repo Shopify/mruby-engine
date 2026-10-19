@@ -228,6 +228,11 @@ struct me_mruby_engine *me_mruby_engine_new(
 }
 
 void me_mruby_engine_destroy(struct me_mruby_engine *self) {
+  /* State may be inconsistent after a quota error; the pool frees it all. */
+  if (self->quota_error_raised) {
+    return;
+  }
+
   struct me_memory_pool *allocator = me_mruby_engine_get_allocator(self);
   mrb_close(self->state);
   me_memory_pool_free(allocator, self);
